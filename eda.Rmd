@@ -1,0 +1,29 @@
+---
+title: "Jafar & Rumiyya, graph homework"
+output: html_notebook
+---
+Reading the data:
+
+```{r}
+library(igraph)
+p2ptable <- read.table("p2p-Gnutella31.txt")
+p2p <- graph_from_data_frame(p2ptable, directed=TRUE)
+print("Number of vertices: ")
+print(length(V(p2p)))
+print("Number of edges: ")
+print(length(E(p2p)))
+```
+This graph contains 62586 vertices and 147892 edges. When we visualize it directly, all we get is a large blob. So we will filter it down. 
+```{r}
+edge.attributes(p2p)$weight <- rnorm(length(E(p2p)))
+p2p.small <- delete.edges(p2p, which(E(p2p)$weight <= 3))
+p2p.small <- delete.vertices(simplify(p2p.small), degree(p2p.small)==0)
+print("Number of vertices: ")
+print(length(V(p2p.small)))
+print("Number of edges: ")
+print(length(E(p2p.small)))
+```
+At first, we assign random weights to edges, sampled from normal distribution. We then filter out anything below 3 standard deviations, which means we are left with 0.3 percent of the edges. Lastly, we drop any vertice that has degree of 0. Let's visualize it.
+```{r}
+plot.igraph(p2p.small)
+```
